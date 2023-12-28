@@ -21,7 +21,9 @@ async function main(){
 app.get('/',(req,res)=>{
     res.send("hi i am root ");
 })
-app.get("/testListing",async (req,res)=>{
+
+
+/*app.get("/testListing",async (req,res)=>{
     let sampleListing = new Listing ({
         title:"my new vila",
         description:"by the beach",
@@ -33,7 +35,7 @@ app.get("/testListing",async (req,res)=>{
     await sampleListing.save();
     console.log("sample was save")
     res.send("successfull listing")
-})
+}) */
 
 
 
