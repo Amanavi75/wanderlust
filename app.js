@@ -4,6 +4,8 @@ const mongoose = require("mongoose")
 const Listing = require("./models/listing.js")
 const path = require("path")
 const methodOverride = require("method-override")
+const ejsMate = require("ejs-mate");
+//use to create the template for the the all the page of website
 
 const MONGO_URL= "mongodb://127.0.0.1:27017/wanderlust"
 // database connection 
@@ -23,6 +25,9 @@ app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({extended:true}))
 // it will parse all the data that is coming inside the request 
 app.use(methodOverride("_method"));
+app.engine('ejs',ejsMate) 
+app.use(express.static(path.join(__dirname,"/public")));
+
 
 
 app.get('/',(req,res)=>{
