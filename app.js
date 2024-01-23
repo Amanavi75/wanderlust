@@ -6,9 +6,14 @@ const path = require("path")
 const methodOverride = require("method-override")
 const ejsMate = require("ejs-mate");
 //use to create the template for the the all the page of website
+const wrapAsync = require("./utils/wrapAsync.js");
+const ExpressError = require("./utils/ExpressError.js");
+
 
 const MONGO_URL= "mongodb://127.0.0.1:27017/wanderlust"
 // database connection 
+
+
 
 main()
 .then(()=>{
@@ -49,11 +54,16 @@ app.get("/listings", async (req, res) => {
 
 
    // create route 
-  app.post("/listings", async (req, res) => {
+  app.post("/listings", wrapAsync(async (req, res,next) => {
+    if(!req.body.listing){
+      throw new ExpressError(400,"send valid data for listing")
+    }
+
     const newListing = new Listing(req.body.listing);
     await newListing.save();
     res.redirect("/listings");
-  });
+    })
+  );
 
   //Show Route 
   app.get("/listings/:id",async(req,res)=>{
@@ -74,6 +84,10 @@ app.get("/listings/:id/edit", async (req, res) => {
  
   //update route 
   app.put("/listings/:id",async(req,res)=>{
+
+    if(!req.body.listing){
+      throw new ExpressError(400,"send valid data for updating")
+    }
     let {id} = req.params;
     await Listing.findByIdAndUpdate(id,{...req.body.listing})
     res.redirect("/listings");
@@ -109,8 +123,18 @@ app.get("/listings/:id/edit", async (req, res) => {
     res.send("successfull listing")
 }) */
 
+app.all("*",(req,res,next)=>{
+  next(new ExpressError(404,"page Not found "));
+})
 
+app.use((err,req,res,next)=>{
+  let {statusCode,message} = err;
 
+  res
+  .status(statusCode)
+  .send(message)
+
+})
 
 
 app.listen(8080,()=>{
