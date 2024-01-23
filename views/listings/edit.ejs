@@ -2,7 +2,11 @@
 <div class="row mt-3">
 <div class="col-8 offset-2">
     <h3>Edit your Listing</h3>
-    <form method="POST" action="/listings/<%= listing._id %>?_method=PUT">
+    <form method="POST" action="/listings/<%= listing._id %>?_method=PUT" 
+      novalidate
+      class="needs-validation"
+      
+      >
 
       <div class="mb-3">
         <label for="title" class="form-label" >Title</label>
@@ -10,13 +14,19 @@
       value="<%= listing.title %>" 
       type="text"
       class="form-control"
+      required
        />
+       <div class="valid-feedback">
+        Title looks good
+       </div>
     </div>
     <div class="mb-3">
     <label for="description" class="form-label" >Description</label>
     <textarea 
     name="listing[description]"
-    class="form-control">
+    class="form-control"
+    required
+    >
       <%= listing.description %>
       
       </textarea>
@@ -28,6 +38,7 @@
       value="<%= listing.image %>" 
       type="text" 
       class="form-control"
+      required
       />
     </div>
 
@@ -37,7 +48,11 @@
        value="<%= listing.price %>" 
        type="number"
        class="form-control"
+       required
         />
+        <div class="invalid-feedback">
+          please enter a valid price 
+         </div>
     </div>
 
     <div class="row">
@@ -48,7 +63,11 @@
           value="<%= listing.country %>"
           type="text"
           class="form-control"
+          required
         />
+        <div class="invalid-feedback">
+          enter the name of country 
+        </div>
         </div>
   
         <div class="mb-3 col-md-8">
@@ -58,7 +77,11 @@
           value="<%= listing.location %>"
           type="text"
           class="form-control"
+          required
         />
+        <div class="invalid-feedback">
+          enter the name of location 
+        </div>
       </div>
 
     </div>
