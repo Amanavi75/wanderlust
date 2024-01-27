@@ -1,18 +1,16 @@
 const express = require("express")
 const app = express();
 const mongoose = require("mongoose")
-const Listing = require("./models/listing.js")
 const path = require("path")
 const methodOverride = require("method-override")
 const ejsMate = require("ejs-mate");
 //use to create the template for the the all the page of website
-const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
-const {reviewSchema} = require("./schema.js");
-const Review = require("./models/review.js")
+
 
 
 const listings = require("./routes/listing.js")
+const reviews = require("./routes/review.js")
 
 const MONGO_URL= "mongodb://127.0.0.1:27017/wanderlust"
 // database connection 
@@ -44,47 +42,14 @@ app.get('/',(req,res)=>{
 })
 
 
-//method for validating the review
-const validateReview = (req,res,next) =>{
-  let {error} = reviewSchema.validate(req.body);
-    if(error){
-      let errorMsg = error.details.map((el)=> el.message).join(",")
-      throw new ExpressError(400,errorMsg)
-    }else{
-      next();
-    }
-}
+
 
 
 app.use("/listings",listings);
+app.use("/listings/:id/reviews",reviews)
 
 
 
-  //reviews
-  app.post("/listings/:id/reviews",validateReview,wrapAsync(async(req,res)=>{
-    const listing = await Listing.findById(req.params.id);
-    let newReview = new Review(req.body.review)
-
-    listing.reviews.push(newReview);
-
-    await newReview.save();
-    await listing.save();
-
-    res.redirect(`/listings/${listing._id}`);
-  }))
-
-  //delete route 
-  app.delete("/listings/:id/reviews/:reviewId",wrapAsync(async(req,res)=>{
-    let {id,reviewId} = req.params;
-    await Listing.findByIdAndUpdate(id,{
-      $pull:{
-        reviews:reviewId
-      }
-    });
-    await Review.findByIdAndDelete(reviewId)
-
-    res.redirect(`/listings/${id}`);
-  }))
 
 /*app.get("/testListing",async (req,res)=>{
     let sampleListing = new Listing ({
@@ -105,7 +70,7 @@ app.all("*",(req,res,next)=>{
 })
 
 app.use((err,req,res,next)=>{
-  let {statusCode,message} = err;
+  let {statusCode=500,message="something went wrong"} = err;
 
   res.status(statusCode).render("error.ejs",{message})
 
