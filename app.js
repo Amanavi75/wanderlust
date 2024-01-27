@@ -8,12 +8,11 @@ const ejsMate = require("ejs-mate");
 //use to create the template for the the all the page of website
 const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
-const {listingSchema,reviewSchema} = require("./schema.js");
+const {reviewSchema} = require("./schema.js");
 const Review = require("./models/review.js")
 
 
-const listings = require("./routes/listing.js");
-
+const listings = require("./routes/listing.js")
 
 const MONGO_URL= "mongodb://127.0.0.1:27017/wanderlust"
 // database connection 
@@ -59,17 +58,15 @@ const validateReview = (req,res,next) =>{
 
 app.use("/listings",listings);
 
-  
-  
+
 
   //reviews
-  //adding review
   app.post("/listings/:id/reviews",validateReview,wrapAsync(async(req,res)=>{
     const listing = await Listing.findById(req.params.id);
     let newReview = new Review(req.body.review)
 
     listing.reviews.push(newReview);
-    
+
     await newReview.save();
     await listing.save();
 
@@ -88,7 +85,6 @@ app.use("/listings",listings);
 
     res.redirect(`/listings/${id}`);
   }))
-
 
 /*app.get("/testListing",async (req,res)=>{
     let sampleListing = new Listing ({
