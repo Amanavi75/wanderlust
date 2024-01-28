@@ -8,7 +8,9 @@ const ejsMate = require("ejs-mate");
 const ExpressError = require("./utils/ExpressError.js");
 const session = require("express-session")
 const flash = require("connect-flash");
-
+const passport = require("passport")
+const localStrategy = require("passport-local");
+const User = require("./models/user.js")
 
 const listings = require("./routes/listing.js")
 const reviews = require("./routes/review.js")
@@ -55,33 +57,36 @@ app.get('/',(req,res)=>{
 app.use(session(sessionOptions));
 app.use(flash());
 
+app.use(passport.initialize());
+//* middleware to initiaize passport
+app.use(passport.session())
+passport.use(new localStrategy(User.authenticate()));
+
+passport.serializeUser(User.authenticate());
+passport.deserializeUser(User.deserializeUser());
+
+
 app.use((req,res,next)=>{
     res.locals.success = req.flash("success");
     res.locals.error = req.flash("error");
     next();
 })
 
+app.get("/demouser",async(req,res)=>{
+  let fakeUser = new User({
+    email:"fa@gmail.com",
+    username:"fa12"
+  });
 
+  let registeredUser = await User.register(fakeUser,"helloworld")
+
+ res.send(registeredUser);
+})
 
 app.use("/listings",listings);
 app.use("/listings/:id/reviews",reviews)
 
 
-
-
-/*app.get("/testListing",async (req,res)=>{
-    let sampleListing = new Listing ({
-        title:"my new vila",
-        description:"by the beach",
-        price:1200,
-        location:"calangute",
-        country:"India"
-    });
-
-    await sampleListing.save();
-    console.log("sample was save")
-    res.send("successfull listing")
-}) */
 
 app.all("*",(req,res,next)=>{
   next(new ExpressError(404,"page Not found "));
