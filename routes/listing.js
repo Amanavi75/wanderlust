@@ -36,7 +36,7 @@ router.get("/", async (req, res) => {
    // create route 
   router.post("/",validateListing, wrapAsync(async (req, res,next) => {
     const newListing = new Listing(req.body.listing);
-    
+    req.flash("success","new listing created !");
     await newListing.save();
     res.redirect("/listings");
     })
