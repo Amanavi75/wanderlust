@@ -60,14 +60,12 @@ router.get("/:id/edit", wrapAsync(async (req, res) => {
 
  
   //update route 
-  router.put("/:id",wrapAsync(async(req,res)=>{
+  router.put("/:id",validateListing,wrapAsync(async(req,res)=>{
 
-    if(!req.body.listing){
-      throw new ExpressError(400,"send valid data for updating")
-    }
     let {id} = req.params;
     await Listing.findByIdAndUpdate(id,{...req.body.listing})
-    res.redirect("/listings");
+    req.flash("success","Listing updated !");
+    res.redirect(`/listings/${id}`);
 
   }))
 
@@ -75,7 +73,7 @@ router.get("/:id/edit", wrapAsync(async (req, res) => {
   router.delete("/:id",wrapAsync(async(req,res)=>{
     let {id} = req.params;
     let deletedListing = await  Listing.findByIdAndDelete(id)
-    console.log(deletedListing);
+    req.flash("success","listing deleted !");
 
     res.redirect("/listings");
 

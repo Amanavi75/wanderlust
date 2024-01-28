@@ -29,7 +29,7 @@ const validateReview = (req,res,next) =>{
 
     await newReview.save();
     await listing.save();
-
+    req.flash("success","new review created !");
     res.redirect(`/listings/${listing._id}`);
   }))
 
@@ -42,7 +42,7 @@ const validateReview = (req,res,next) =>{
       }
     });
     await Review.findByIdAndDelete(reviewId)
-
+    req.flash("success","review deleted!");
     res.redirect(`/listings/${id}`);
   }))
 
