@@ -44,4 +44,16 @@ passport.authenticate("local", {failureRedirect: '/login',failureFlash:true})
     req.flash("success","welcome back to wanderlust")
     res.redirect("/listings");
 })
+
+
+router.get("/logout",(req,res,next)=>{
+    req.logout((err)=>{
+        if(err){
+            return next(err);
+        }
+        req.flash("success","you are loggged out")
+        return res.redirect("/listings")
+    });
+
+})
 module.exports = router;
