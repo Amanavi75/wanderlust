@@ -10,35 +10,41 @@ const listingController = require("../controllers/listings.js")
 
 
 
-// index route 
-//* it will show all the listings as the list
-router.get("/", wrapAsync(listingController.index));
+router          
+    .route("/")
+    .get( wrapAsync (listingController.index)) //Index Route 
+    .post(   //create route
+        isLoggedIn,  
+        validateListing,  
+        wrapAsync(listingController.createListing)
+    );
+   
 
-//new Route 
-router.get("/new",isLoggedIn,listingController.renderNewform)
-
-
-// create route 
-router.post("/",validateListing, isLoggedIn,wrapAsync(listingController.createListing)
-  );
-
-//Show Route 
-router.get("/:id",wrapAsync(listingController.showListing));
+//New Route
+router.get("/new", isLoggedIn, listingController.renderNewform );
 
 
+router
+    .route("/:id")
+    .get( wrapAsync (listingController.showListing))  //Show route
+    .put(  //update route
+        isLoggedIn,
+        isOwner,  
+        validateListing, 
+        wrapAsync(listingController.updateListing)
+    )
+    .delete(  //delete route
+        isLoggedIn,  
+        isOwner,
+        wrapAsync(listingController.destroyListing)
+    );
+    
 //Edit Route
-router.get("/:id/edit",isLoggedIn, isOwner
-,wrapAsync(listingController.editListing));
+router.get("/:id/edit", 
+    isLoggedIn,
+    isOwner,
+    wrapAsync(listingController.editListing));
 
- 
-//update route 
-router.put("/:id",
-validateListing,
-isLoggedIn,
-isOwner
-  ,wrapAsync(listingController.updateListing))
 
-  // delete route
-  router.delete("/:id",isLoggedIn,wrapAsync(listingController.destroyListing));
 
-  module.exports = router;
+module.exports = router;
